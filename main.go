@@ -5,12 +5,20 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/hlpd-pham/pokedexcli/client"
 )
+
+type commandConfig struct {
+	PokemonClient client.PokemonClient
+	PrevUrl       *string
+	NextUrl       *string
+}
 
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(cfg *commandConfig) error
 }
 
 func getCommands() map[string]cliCommand {
@@ -25,6 +33,16 @@ func getCommands() map[string]cliCommand {
 			description: "Exit the Pokedex",
 			callback:    commandExit,
 		},
+		"map": {
+			name:        "map",
+			description: "Display 20 locations from next page",
+			callback:    commandMap,
+		},
+		"mapb": {
+			name:        "mapb",
+			description: "Display 20 locations from previous page",
+			callback:    commandMapPrev,
+		},
 	}
 }
 
@@ -36,6 +54,11 @@ func parseInput(text string) []string {
 }
 
 func main() {
+	cmdCfg := commandConfig{
+		PokemonClient: client.NewPokemonClient(),
+		PrevUrl:       nil,
+		NextUrl:       nil,
+	}
 	for {
 		fmt.Print("Pokedex > ")
 		scanner := bufio.NewScanner(os.Stdin)
@@ -44,10 +67,9 @@ func main() {
 		command, ok := getCommands()[inputTokens[0]]
 		if !ok {
 			fmt.Println("Unknown command")
-			commandHelp()
+			commandHelp(&cmdCfg)
 		} else {
-			fmt.Printf("%s, %s\n", command.name, command.description)
-			command.callback()
+			command.callback(&cmdCfg)
 		}
 		fmt.Println()
 	}
