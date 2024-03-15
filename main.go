@@ -13,6 +13,7 @@ type commandConfig struct {
 	PokemonClient client.PokemonClient
 	PrevUrl       *string
 	NextUrl       *string
+	CommandArgs   []string
 }
 
 type cliCommand struct {
@@ -43,6 +44,11 @@ func getCommands() map[string]cliCommand {
 			description: "Display 20 locations from previous page",
 			callback:    commandMapPrev,
 		},
+		"explore": {
+			name:        "explore",
+			description: "Explore a location",
+			callback:    commandExplore,
+		},
 	}
 }
 
@@ -69,7 +75,11 @@ func main() {
 			fmt.Println("Unknown command")
 			commandHelp(&cmdCfg)
 		} else {
-			command.callback(&cmdCfg)
+			cmdCfg.CommandArgs = inputTokens[1:]
+			err := command.callback(&cmdCfg)
+			if err != nil {
+				fmt.Printf("Found error while running command %s: %v\n", command.name, err)
+			}
 		}
 		fmt.Println()
 	}
