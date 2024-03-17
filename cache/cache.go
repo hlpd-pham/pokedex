@@ -1,7 +1,6 @@
 package cache
 
 import (
-	"fmt"
 	"sync"
 	"time"
 )
@@ -53,7 +52,6 @@ func (c *Cache) reapLoop() {
 		for key, entry := range c.cacheEntries {
 			if time.Since(entry.createdAt) > c.Interval {
 				delete(c.cacheEntries, key)
-				fmt.Printf("Entry with key %s reaped\n", key)
 			}
 		}
 

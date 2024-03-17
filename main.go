@@ -14,6 +14,7 @@ type commandConfig struct {
 	PrevUrl       *string
 	NextUrl       *string
 	CommandArgs   []string
+	PokemonCaught map[string]client.Pokemon
 }
 
 type cliCommand struct {
@@ -49,6 +50,16 @@ func getCommands() map[string]cliCommand {
 			description: "Explore a location",
 			callback:    commandExplore,
 		},
+		"catch": {
+			name:        "catch",
+			description: "Catch a Pokemon",
+			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "Inspect a Pokemon",
+			callback:    commandInspect,
+		},
 	}
 }
 
@@ -64,6 +75,7 @@ func main() {
 		PokemonClient: client.NewPokemonClient(),
 		PrevUrl:       nil,
 		NextUrl:       nil,
+		PokemonCaught: make(map[string]client.Pokemon),
 	}
 	for {
 		fmt.Print("Pokedex > ")
